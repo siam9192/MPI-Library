@@ -56,12 +56,72 @@ const ChangePasswordValidation = z.object({
     .max(32, { message: 'Password must be at least 6 characters and Maximum 32 characters longs' }),
 });
 
+const AdministratorAccountRegistrationValidation = z.object({
+  fullName: z
+    .string()
+    .min(3, { message: 'Full name must be at least 3 characters long' })
+    .max(30, { message: 'Full name must be at most 30 characters long' }),
+
+  profilePhotoUrl: z
+    .string({ required_error: 'Profile photo URL is required' })
+    .url({ message: 'Profile photo must be a valid URL' }),
+
+  gender: z.nativeEnum(EGender, {
+    errorMap: () => ({ message: 'Gender must be one of the defined values' }),
+  }),
+
+  contact: z.object({
+    emailAddress: z
+      .string({ required_error: 'Email address is required' })
+      .email({ message: 'Invalid email address format' }),
+
+    phoneNumber: z
+      .string()
+      .min(5, { message: 'Phone number must be at least 5 digits' })
+      .max(11, { message: 'Phone number must be at most 11 digits' }),
+  }),
+});
+
+const LibrarianAccountRegistrationValidation = z.object({
+  fullName: z
+    .string()
+    .min(3, { message: 'Full name must be at least 3 characters long' })
+    .max(30, { message: 'Full name must be at most 30 characters long' }),
+
+  profilePhotoUrl: z
+    .string({ required_error: 'Profile photo URL is required' })
+    .url({ message: 'Profile photo must be a valid URL' }),
+
+  gender: z.nativeEnum(EGender, {
+    errorMap: () => ({ message: 'Gender must be one of the defined values' }),
+  }),
+  about: z
+    .string({
+      required_error: 'About is required',
+      invalid_type_error: 'About must be string type',
+    })
+    .min(20, 'About must be in 20 and maximum 1000 characters')
+    .max(1000),
+  contact: z.object({
+    emailAddress: z
+      .string({ required_error: 'Email address is required' })
+      .email({ message: 'Invalid email address format' }),
+
+    phoneNumber: z
+      .string()
+      .min(5, { message: 'Phone number must be at least 5 digits' })
+      .max(11, { message: 'Phone number must be at most 11 digits' }),
+  }),
+});
+
 const AuthValidations = {
   CreateStudentAccountRequestValidation,
   StudentLoginValidation,
   ManagementLoginValidation,
   VerifyStudentRegistrationRequestUsingOTPValidation,
   ChangePasswordValidation,
+  AdministratorAccountRegistrationValidation,
+  LibrarianAccountRegistrationValidation,
 };
 
 export default AuthValidations;

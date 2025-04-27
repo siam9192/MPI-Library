@@ -18,16 +18,21 @@ const BookModelSchema = new Schema<IBook>(
       ref: 'Genre',
       required: true,
     },
-    authorId: {
+    author: {
       type: Schema.Types.ObjectId,
       required: true,
+    },
+    shelfLocation: {
+      type: String,
+      minlength: 3,
+      maxlength: 20,
     },
     availableCopies: {
       type: Number,
       min: 0,
       required: true,
     },
-    rating: {
+    avgRating: {
       type: Number,
       min: 0,
       max: 5,
@@ -38,10 +43,15 @@ const BookModelSchema = new Schema<IBook>(
       min: 0,
       default: 0,
     },
+    wishListedCount: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
     status: {
       type: String,
       enum: Object.values(EBookStatus),
-      default: EBookStatus.AVAILABLE,
+      default: EBookStatus.ACTIVE,
     },
     exceptedAvailableDate: {
       type: Date,

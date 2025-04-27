@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import envConfig from './config/env.config';
 import app from './app';
+import { generateSecret } from './helpers';
 
 async function main() {
   try {

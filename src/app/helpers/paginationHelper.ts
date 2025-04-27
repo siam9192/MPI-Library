@@ -1,4 +1,6 @@
 import { IPaginationOptions } from '../types';
+import { paginationOptionKeys } from '../utils/constant';
+import Pick from '../utils/pick';
 
 interface IOptionsResult {
   page: number;
@@ -25,3 +27,5 @@ export const calculatePagination = (
     sortBy,
   };
 };
+
+export const paginationOptionPicker = (query: any) => Pick(query, paginationOptionKeys);

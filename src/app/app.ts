@@ -3,12 +3,15 @@ import express, { NextFunction, Request, Response } from 'express';
 import { sendErrorResponse } from './utils/response';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import routes from './routes';
 const app = express();
 app.use(express.json());
 
 app.use(cors({ credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(routes);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.log(err);

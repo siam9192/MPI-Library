@@ -14,3 +14,8 @@ export enum EDepartmentStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'Inactive',
 }
+
+export interface ICreateDepartmentPayload {
+  name: string;
+  shortName: string;
+}

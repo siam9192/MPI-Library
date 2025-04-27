@@ -16,3 +16,9 @@ export enum EAuthorStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'Inactive',
 }
+
+export interface ICreateAuthorPayload {
+  name: string;
+  photoUrl: string;
+  about: string;
+}

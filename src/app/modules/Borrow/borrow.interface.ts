@@ -3,7 +3,10 @@ import { IModelNecessaryFields } from '../../types/model.type';
 
 export interface IBorrow extends IModelNecessaryFields {
   request: Types.ObjectId;
-  librarian: Types.ObjectId;
+  handedOveredBy: Types.ObjectId;
+  collectedBy?: Types.ObjectId;
+  book: Types.ObjectId;
+  student: Types.ObjectId;
   exceptedReturnDate: Date;
   returnDate?: Date;
   returnCondition?: TReturnCondition;

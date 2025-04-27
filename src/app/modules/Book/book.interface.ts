@@ -6,10 +6,12 @@ export interface IBook extends TModelTimeStamps {
   name: string;
   coverPhotoUrl: string;
   genre: Types.ObjectId;
-  authorId: Types.ObjectId;
+  author: Types.ObjectId;
+  shelfLocation: string;
   availableCopies: number;
-  rating: number;
+  avgRating: number;
   reviewCount: number;
+  wishListedCount: number;
   exceptedAvailableDate?: Date;
   status: TBookStatus;
   index: number;
@@ -18,8 +20,32 @@ export interface IBook extends TModelTimeStamps {
 type TBookStatus = `${EBookStatus}`;
 
 export enum EBookStatus {
-  AVAILABLE = 'Available',
-  UNAVAILABLE = 'Unavailable',
-  PAUSED = 'Paused',
+  ACTIVE = 'Active',
+  INACTIVE = 'Inactive',
   DELETED = 'Deleted',
+}
+
+export interface ICreateBookPayload {
+  name: string;
+  coverPhotoUrl: string;
+  genre: string;
+  author: string;
+  shelfLocation: string;
+  availableCopies: number;
+  status?: TBookStatus;
+}
+
+export interface IUpdateBookPayload extends Partial<ICreateBookPayload> {}
+
+export interface IBooksFilterData {
+  searchTerm?: string;
+  genreIds?: string;
+  authorIds?: string;
+}
+
+export interface IManageBooksFilterData {
+  searchTerm?: string;
+  genreIds?: string;
+  authorIds?: string;
+  status: string;
 }

@@ -6,14 +6,17 @@ const DepartmentModelSchema = new Schema<IDepartment>(
     _id: Types.ObjectId,
     name: {
       type: String,
+      trim: true,
       minlength: 1,
       maxlength: 30,
+      unique: true,
       required: true,
     },
     shortName: {
       type: String,
       minlength: 1,
       maxlength: 10,
+      unique: true,
       required: true,
     },
     status: {

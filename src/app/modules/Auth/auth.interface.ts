@@ -32,3 +32,15 @@ export interface IChangePasswordPayload {
   oldPassword: string;
   newPassword: string;
 }
+
+export interface IRegisterManagementAccount {
+  fullName: string;
+  password: string;
+  gender: TGender;
+  profilePhotoUrl: string;
+  about?: string;
+  contact: {
+    emailAddress: string;
+    phoneNumber: string;
+  };
+}

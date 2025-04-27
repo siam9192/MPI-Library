@@ -26,7 +26,7 @@ const BorrowRequestModel = new Schema<IBorrowRequest>(
     },
     expireAt: {
       type: Date,
-      default: null,
+      required: true,
     },
     status: {
       type: String,

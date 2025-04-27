@@ -8,6 +8,7 @@ import {
   IChangePasswordPayload,
   ICreateStudentRegistrationRequestPayload,
   IManagementLoginData,
+  IRegisterManagementAccount,
   IStudentLoginData,
   IStudentRegistrationRequestTokenPayload,
 } from './auth.interface';
@@ -20,6 +21,16 @@ import { EEmailVerificationStatus } from '../EmailVerification/emailVerification
 import { EUserRole, EUserStatus } from '../User/user.interface';
 import { IAuthUser } from '../../types';
 import { JwtPayload } from 'jsonwebtoken';
+import ManagementAccountRegistrationRequest from '../ManagementAccountRegistrationRequest/management-account-registration.model';
+import {
+  EManagementAccountRegistrationRequestRole,
+  EManagementAccountRegistrationRequestStatus,
+} from '../ManagementAccountRegistrationRequest/management-account-registration.interface';
+import AuthValidations from './auth.validation';
+import Administrator from '../Administrator/administrator.model';
+import Librarian from '../Librarian/librarian.model';
+import { Student } from '../Student/student.model';
+
 const createStudentRegistrationRequestIntoDB = async (
   payload: ICreateStudentRegistrationRequestPayload
 ) => {
@@ -286,6 +297,42 @@ const verifyStudentRegistrationRequestUsingOTP = async (payload: {
       throw new Error('Failed to update request status');
     }
 
+    // Step 11: Create user account
+    const createdUser = await User.create(
+      [
+        {
+          roll: verification.request.roll,
+          email: verification.request.email,
+          password: verification.request.password,
+        },
+      ],
+      { session }
+    );
+
+    if (!createdUser[0]) throw new Error('');
+    //Step 12: Create profile
+    let createdProfile = (
+      await Student.create(
+        [
+          {
+            userId: createdUser[0]._id,
+            fullName: verification.request.fullName,
+
+            gender: verification.request.gender,
+            roll: verification.request.roll,
+
+            department: verification.request.department,
+            currentSemester: verification.request.semester,
+            shift: verification.request,
+            session: verification.request,
+          },
+        ],
+        { session }
+      )
+    )[0];
+
+    if (!createdProfile) throw new Error();
+
     // Commit transaction
     await session.commitTransaction();
     await session.endSession();
@@ -472,10 +519,112 @@ const getNewAccessToken = async (refreshToken: string) => {
   }
 };
 
+const registerManagementAccount = async (secret: string, payload: IRegisterManagementAccount) => {
+  //Step 1: Fetch request by secret
+  const request = await ManagementAccountRegistrationRequest.findOne({
+    secret,
+    status: EManagementAccountRegistrationRequestStatus.PENDING,
+  });
+
+  //Step 2: Checking request existence also Validate payload here using zod
+  if (!request) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Maybe this secret is expired,used or not exist');
+  }
+
+  if (Object.values(EManagementAccountRegistrationRequestRole).includes(request.role as any)) {
+    AuthValidations.AdministratorAccountRegistrationValidation.parse(payload);
+  } else {
+    AuthValidations.LibrarianAccountRegistrationValidation.parse(payload);
+  }
+
+  // Step 3: Start database transaction
+  const session = await startSession();
+  session.startTransaction();
+
+  try {
+    // Step 5: Update request status
+    const updateRequestStatus = await ManagementAccountRegistrationRequest.updateOne(
+      { _id: request._id },
+      { status: EManagementAccountRegistrationRequestStatus.SUCCESSFUL }
+    );
+
+    // Step 6: Check request update status
+    if (!updateRequestStatus.modifiedCount) {
+      throw new Error('Failed to update verification status');
+    }
+
+    // Step 7:Create user
+
+    const hashedPassword = await bcryptHash(payload.password);
+
+    const createdUser = await User.create(
+      [
+        {
+          email: request.email,
+          password: hashedPassword,
+        },
+      ],
+      { session }
+    );
+
+    if (!createdUser[0]) throw new Error('');
+    // Create profile base on role
+    let createdProfile;
+    if (Object.values(EManagementAccountRegistrationRequestRole).includes(request.role as any)) {
+      createdProfile = (
+        await Administrator.create(
+          [
+            {
+              userId: createdUser[0]._id,
+              fullName: payload.fullName,
+              profilePhotoUrl: payload.profilePhotoUrl,
+              gender: payload.gender,
+              contact: payload.contact,
+              role: request.role,
+            },
+          ],
+          { session }
+        )
+      )[0];
+    } else {
+      createdProfile = (
+        await Librarian.create(
+          [
+            {
+              userId: createdUser[0]._id,
+              fullName: payload.fullName,
+              profilePhotoUrl: payload.profilePhotoUrl,
+              gender: payload.gender,
+              about: payload.about,
+              contact: payload.contact,
+            },
+          ],
+          { session }
+        )
+      )[0];
+    }
+
+    if (!createdProfile) throw new Error();
+    // Commit transaction
+    await session.commitTransaction();
+    await session.endSession();
+    return null;
+  } catch (error) {
+    // Rollback transaction on error
+    await session.abortTransaction();
+    await session.endSession();
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Sorry registration failed.Something went wrong'
+    );
+  }
+};
+
 const AuthServices = {
   createStudentRegistrationRequestIntoDB,
   resendEmailVerificationOTP,
   verifyStudentRegistrationRequestUsingOTP,
+  registerManagementAccount,
   studentLogin,
   managementLogin,
   changePassword,

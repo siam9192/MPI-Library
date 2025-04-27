@@ -38,6 +38,8 @@ const LibrarianModelSchema = new Schema<ILibrarian>(
 
     about: {
       type: String,
+      minlength: 20,
+      maxlength: 1000,
       default: null,
     },
     contact: ContactSchema,

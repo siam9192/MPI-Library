@@ -31,3 +31,51 @@ export function generateNumericOTP(length = 6) {
   }
   return otp;
 }
+
+export function generateSecret(length = 20): string {
+  let secret = '';
+  const source = [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
+  ];
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * source.length);
+    secret += source[randomIndex];
+  }
+
+  return secret;
+}

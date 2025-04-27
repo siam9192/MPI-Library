@@ -8,6 +8,11 @@ const GenreModelSchema = new Schema<IGenre>(
       minlength: 1,
       maxlength: 50,
     },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     imageUrl: {
       type: String,
       default: null,

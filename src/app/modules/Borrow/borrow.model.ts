@@ -8,10 +8,26 @@ const BorrowModel = new Schema<IBorrow>(
       ref: 'BorrowRequest',
       required: true,
     },
-    librarian: {
+    book: {
+      type: Schema.Types.ObjectId,
+      ref: 'Book',
+      required: true,
+    },
+    student: {
       type: Schema.Types.ObjectId,
       ref: 'Librarian',
       required: true,
+    },
+    handedOveredBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'Librarian',
+
+      required: true,
+    },
+    collectedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'Librarian',
+      default: null,
     },
     exceptedReturnDate: {
       type: Date,

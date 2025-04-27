@@ -1,10 +1,12 @@
 import { Types } from 'mongoose';
 import { TModelTimeStamps } from '../../types/model.type';
+import Pick from '../../utils/pick';
 
 export interface IGenre extends TModelTimeStamps {
   _id: Types.ObjectId;
   name: string;
-  imageUrl: string;
+  slug: string;
+  imageUrl?: string;
   status: TGenreStatus;
 }
 
@@ -14,3 +16,5 @@ export enum EGenreStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'Inactive',
 }
+
+export interface ICreateGenrePayload extends Pick<IGenre, 'name' | 'imageUrl'> {}

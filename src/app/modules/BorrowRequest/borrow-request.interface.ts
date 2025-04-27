@@ -7,7 +7,7 @@ export interface IBorrowRequest extends TModelTimeStamps {
   book: Types.ObjectId;
   borrowForDays: number;
   rejectedFor?: string;
-  expireAt?: Date;
+  expireAt: Date;
   status: TBorrowRequestStatus;
 }
 
@@ -19,4 +19,17 @@ export enum EBorrowRequestStatus {
   CANCELED = 'Canceled',
   REJECTED = 'Rejected',
   EXPIRED = 'Expired',
+}
+
+export interface ICreateBorrowRequestPayload {
+  bookId: string;
+  borrowForDays: number;
+}
+
+export interface IManageBorrowRequestsFiltersData {
+  roll?: string;
+}
+
+export interface IApproveBorrowRequestPayload {
+  expireDate: Date;
 }
